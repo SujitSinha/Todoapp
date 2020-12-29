@@ -1,83 +1,51 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import { useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 function App() {
   const [item, setItem] = useState("");
-  const initialData = localStorage.toDos ? JSON.parse(localStorage.toDos) : [];
-  const [data, setData] = useState(initialData);
-
+  const [data, setData] = useState([]);
+  const[dataCopy,setDataCopy]  = useState(data);
+  const [search, setSearch] = useState(false);
+  
   const handleChange = (e) => {
     e.preventDefault();
     setItem(e.target.value);
-
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setData([{content:item,submitted:false,visible:true},...data]);
+    setData([...data,{content:item,edit:false}]);
     setItem("");
+    setSearch(true);
+    setDataCopy([...dataCopy,{content:item,edit:false}]);
   }
  
+ const completed=(i,e)=>{
+   let toDo = [...data];
+   toDo[i].edit=false;
+  toDo[i].content=(document.getElementById('text').value);
+   setData(toDo);
+ }
+ const handleDelete=(index)=>{
+  let toDo = [...data];
+  toDo.splice(index,1);
+  setData(toDo);
+ }
 
-  function highlightText() {
-    let toDos = data;
-    
-    for(let a in document.getElementsByClassName('Todos')){
-      if( document.getElementsByClassName('Todos').hasOwnProperty(a)){
-        document.getElementsByClassName('Todos')[a].innerHTML = (document.getElementsByClassName('Todos')[a].innerHTML.replace(/#([^ ]+)/g, `<span class="highlight">#$1</span>`));
-  }
-  }
+const handleEdit=(i)=>{
+  let toDo = [...data];
+  toDo[i].edit=true;
+   setData(toDo);
 }
 
-
-
-
-
-  useEffect(() => {
-    localStorage.toDos = JSON.stringify(data);
-    highlightText();
-    
-  });
-  
-
- const completed=(i,e)=>{
-  if(e.target.className==="highlight")
-   {
-    let hashText=e.target.innerHTML;
-     var fullTodo=[...data];
-     fullTodo.forEach((td)=>
-     {
-      if(!td.content.includes(hashText) && td.visible)
-      { 
-      td.visible = false;
-      }
-     }); 
-    setData(fullTodo);
-     
-   }
-   else
-
-  
-  {
-   let toDo = [...data];
-   if(!toDo[i].submitted) {
-   toDo[i].submitted = true;
-  toDo.splice(toDo.length-1,0,toDo.splice(i,1)[0])
-   setData(toDo);
-   }
-   }
- }
- const clearFilter=()=>{
-   let toDos=[...data];
-   toDos.forEach(toDo=>toDo.visible = true);
-   setData(toDos);
- }
-
-
-
-
+const searchHandler=(e)=>{
+let toDo=[...dataCopy];
+let filteredData=toDo.filter((item)=>
+{return item.content.toLowerCase().includes(e.target.value.toLowerCase()); 
+})
+setData(filteredData);
+}
 
   return (
     <div className="body">
@@ -89,16 +57,40 @@ function App() {
       </form>
       </div>
       <div className="list-container"> 
-      <Button variant="contained" onClick={clearFilter} color="default" size="small" className="filter-button"> Clear Filter</Button>
+     {search &&  <input onChange={searchHandler} placeholder="Search..."></input>}
       {data.map((lists, index) => {
-        return (   
-          lists.visible &&
-          <li key={index}
-           className={lists.submitted?'done Todos' :'Todos'} 
-           onClick={(e)=>{completed(index,e)}}
-           >{lists.content}  
+        return ( 
+          <div>  
+         {lists.edit &&
+         <div className="list">
+         <textarea key={index}
+         id="text" 
+          className='Todos'
+          >
+            {lists.content}
+            
+         </textarea>
+         <Button variant="contained" color="default" size="small" className="button-edit"  onClick={(e)=>completed(index,e)}>Save</Button>
+
+         <Button variant="contained" color="secondary" size="small" className="button-delete" onClick={()=>handleDelete(index)}>Delete</Button>
+</div>
+}
+
+         {!lists.edit && <div className="list">
+          <li key={index} 
+           className={lists.submitted?'Todos' :'Todos'} 
+           onBlur={(e)=>{completed(index, e)}} 
+           >
+             {lists.content}
           </li>
-          
+          <Button variant="contained" color="default" size="small" className="button-edit"  onClick={()=>handleEdit(index)}>Edit</Button>
+
+          <Button variant="contained" color="secondary" size="small" className="button-delete" onClick={()=>handleDelete(index)}>Delete</Button>
+          </div>
+         }
+         
+  
+</div>         
 )
       })} 
       

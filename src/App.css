@@ -10,10 +10,28 @@ html{
   margin-top: 0;
   padding-top: 0;
   display: border-box;
+}
 
+.list{
+display:inline-flex;
+justify-content: flex-start;
+align-items: center;
+width:41vw;
+}
+
+.button-delete{
+  position:relative;
+  left:10px;
+  height:30px;
+  width:40px;
 }
 
 
+.button-edit{
+  position:relative;
+  height:30px;
+  width:40px;
+}
  input{
    
   border: 5px solid white; 
@@ -48,11 +66,12 @@ display: flex;
  background-color: #62909b;
 width:fit-content;
   line-height: 20px;
-  min-width: 40%;
+  width: 53%;
   flex-wrap: nowrap;
   padding:8px;
   margin:10px;
   cursor: pointer;
+  word-break: break-all;
 }
 .list-container{
   
@@ -62,24 +81,10 @@ width:fit-content;
   display: flex;
   width: 40%;
   flex-direction:column;
-  /* align-content: center; */
-  /* text-align: center; */
   margin: 15px auto;
   align-items: baseline;
   padding: 10px;
   height:60vh;
-  overflow: auto;
+  overflow-x: hidden;
 }
-.done{
-  text-decoration: line-through;
-  background-color: rgba(	98, 144, 155,0.4)
-}
-.highlight{
-  background:linear-gradient(330deg,#b300be 0%,#f00069 100%);
-  font-weight: 150%;
-}
-.filter-button{
-  position: relative;
-  left:70%;
-  right:20%;
-}
+
